@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Запись на маникюр</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--tg-theme-bg-color, #fff);
+      color: var(--tg-theme-text-color, #000);
+      padding: 16px;
+      margin: 0;
+    }
+    h2 { text-align: center; color: #e87a90; }
+    .card {
+      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    label { display: flex; justify-content: space-between; margin: 8px 0; }
+    input[type="date"], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      width: 100%;
+      background: #e87a90;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Nail Studio</h2>
+
+  <div class="card">
+    <h3>Услуги</h3>
+    <label>
+      <span>Маникюр + Покрытие (1500₽)</span>
+      <input type="checkbox" value="1500" data-name="Маникюр + Покрытие" checked disabled>
+    </label>
+    <label>
+      <span>Снятие (+300₽)</span>
+      <input type="checkbox" value="300" data-name="Снятие чужого покрытия" class="service">
+    </label>
+    <label>
+      <span>Дизайн (+400₽)</span>
+      <input type="checkbox" value="400" data-name="Дизайн" class="service">
+    </label>
+  </div>
+
+  <div class="card">
+    <h3>Дата и время</h3>
+    <input type="date" id="date">
+    <select id="time" style="margin-top: 8px;">
+      <option value="10:00">10:00</option>
+      <option value="13:00">13:00</option>
+      <option value="16:00">16:00</option>
+      <option value="19:00">19:00</option>
+    </select>
+  </div>
+
+  <button class="btn" onclick="sendData()">Записаться</button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // Устанавливаем завтрашнюю дату по умолчанию
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('date').valueAsDate = tomorrow;
+
+    function sendData() {
+      let total = 1500;
+      let services = ["Маникюр + Покрытие"];
+
+      document.querySelectorAll('.service:checked').forEach(cb => {
+        total += parseInt(cb.value);
+        services.push(cb.getAttribute('data-name'));
+      });
+
+      const data = {
+        services: services.join(", "),
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        total: total
+      };
+
+      tg.sendData(JSON.stringify(data));
+    }
+  </script>
+</body>
+        </html>
